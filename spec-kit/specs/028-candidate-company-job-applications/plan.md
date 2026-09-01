@@ -1,4 +1,4 @@
-# Implementation Plan: Candidate Company and Team Applications
+# Implementation Plan: Candidate Company
 
 **Branch**: `028-candidate-company-job-applications` | **Date**: 2026-08-26 | **Spec**: [spec.md](./spec.md)
 
@@ -6,9 +6,11 @@
 
 **Note**: This template is filled in by the `/speckit-plan` command. See `.specify/templates/plan-template.md` for the execution workflow.
 
+> **Current delivery scope (2026-09-01):** This delivery keeps the Company discovery, detail, and ordinary company-job search experience only. Candidate applications for HR Manager/Recruiter roles and the Owner/Candidate Team Applications screens and APIs are de-scoped. Existing team-member invitations remain available, while historical TeamApplication records, schema, and retention processing are retained for compatibility and privacy cleanup; no new TeamApplication entry point is exposed.
+
 ## Summary
 
-Add a Candidate-facing Company discovery experience with public company cards, keyword search, deterministic company pagination, company detail pages, employee-derived size, and scoped job search by keyword and location. Company jobs are paginated and reuse the existing Find Jobs card/status actions. Add a separate Owner-only Team Applications workflow for candidates who want to join a company as HR Manager or Recruiter. Team applications retain the submitted CV, allow a human Owner decision, send an idempotent invitation, and create membership only after explicit invitation acceptance. Ordinary job applications continue using the existing job detail, application, scoring, and pipeline workflows.
+Add a Candidate-facing Company discovery experience with public company cards, keyword search, deterministic company pagination, company detail pages, employee-derived size, and scoped job search by keyword and location. Company jobs are paginated and reuse the existing Find Jobs card/status actions. Ordinary job applications continue using the existing job detail, application, scoring, and pipeline workflows. Existing company-member invitations remain available to Owners; historical TeamApplication records and retention processing are kept only for compatibility and privacy cleanup.
 
 ## Technical Context
 
@@ -22,7 +24,7 @@ Add a Candidate-facing Company discovery experience with public company cards, k
 
 **Primary Dependencies**: Existing Better Auth session boundary, Zod contracts, Prisma repositories, CompanyMembership/CompanyInvitation services, CV document storage, job discovery/search service, notification outbox/email service, CSRF and audit primitives.
 
-**Storage**: PostgreSQL for company/job/application/team-application/invitation state; existing protected CV storage for submitted evidence; existing notification outbox for email delivery.
+**Storage**: PostgreSQL for company/job/application/invitation state, plus historical TeamApplication records; existing protected CV storage and notification outbox continue to support retention and delivery cleanup for legacy data.
 
 **Testing**: Vitest unit, contract, integration, security and frontend tests; Playwright system tests; accessibility checks; representative P95 performance tests.
 
@@ -32,9 +34,9 @@ Add a Candidate-facing Company discovery experience with public company cards, k
 
 **Performance Goals**: Company list/detail and scoped keyword/location job search P95 ≤2 seconds; normal page load P95 ≤3 seconds; invitation and decision actions provide visible completion/failure feedback without duplicate records.
 
-**Constraints**: Server-side company visibility and tenant authorization; only approved public companies/jobs; Team Applications limited to HR Manager and Recruiter; CV PDF/DOCX only and exactly 5,000,000-byte maximum; Owner decision required; invitation acceptance required before membership; no scoring, AI, pipeline, or automatic hiring; Vietnamese personal-data and retention controls.
+**Constraints**: Server-side company visibility and tenant authorization; only approved public companies/jobs; Owner invitation acceptance required before membership; no public HR Manager/Recruiter self-application or Team Applications UI/API; no scoring, AI, pipeline, or automatic hiring changes; Vietnamese personal-data and retention controls.
 
-**Scale/Scope**: One public Company area, one company detail view with scoped job search, one Team Applications view, one team-application submission flow, and invitation acceptance. Reuse existing ordinary job application flow; no public people directory or general-purpose ATS pipeline.
+**Scale/Scope**: One public Company area, one company detail view with scoped job search, and the existing company invitation/team-management flow. Reuse existing ordinary job application flow; no public people directory, Team Applications surface, or general-purpose ATS pipeline.
 
 ## Constitution Check
 
@@ -47,7 +49,7 @@ _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 | State, audit, and integrity         | PASS   | Team application and invitation transitions are server-validated, transactional, auditable, and idempotent; duplicate active applications/invitations are prevented.    |
 | CV and personal-data protection     | PASS   | PDF/DOCX and 5,000,000-byte limit, validation before persistence, least-privilege CV access, retention/deletion policy, and email privacy controls are specified.       |
 | Quality and accessibility           | PASS   | P95 search/page targets, responsive UI, keyboard access, labels, loading/error states, and security/performance acceptance tests are planned.                           |
-| Maintainable boundaries             | PASS   | Company/job projections, team-application service, invitation service, repositories, contracts, and UI remain separated; ordinary job workflow is reused.               |
+| Maintainable boundaries             | PASS   | Company/job projections, invitation service, repositories, contracts, and UI remain separated; ordinary job workflow is reused and legacy retention stays isolated.        |
 | Scope discipline                    | PASS   | No scoring, AI recommendation, pipeline/Kanban, or ordinary job application replacement is introduced.                                                                  |
 
 ## Project Structure
@@ -119,13 +121,11 @@ Research decisions are recorded in [research.md](./research.md). The design reus
 ## Phase 1: Design Summary
 
 - Public Company pages use a safe, approved-company projection with keyword/pagination controls and reuse deterministic job discovery/search behavior scoped by `companyId`; company job cards reuse Find Jobs status/action UI.
-- Team Applications are a separate entity from ordinary `JobApplication`; they capture a team role and immutable CV evidence without scoring or pipeline state.
-- Owner decisions and invitation creation are transactional and idempotent. Invitation acceptance is the only transition that grants company membership.
+- Existing Owner invitations and team management remain transactional and tenant-scoped; invitation acceptance is the only transition that grants company membership.
 - Company size is a read-time projection from active membership count and documented size ranges, with an unavailable state when source data is missing.
-- Candidate and Owner views expose only their permitted projections. CV download/preview is authorized server-side and audited.
-- Team-application availability is derived from active Owner membership: public ordinary jobs remain visible, while team-role actions and submissions are disabled when no active Owner can receive the application.
-- A successful team submission writes one deduplicated in-app notification per active Owner and resolves to the Owner Team Applications screen; notification copy is localized from the recipient preference without including CV or applicant contact data.
-- New Company, Candidate Team Applications, Owner Team Applications, and related Manage Team navigation copy is read from the shared English/Vietnamese workspace locale boundary; company and job content remains user-authored.
+- Candidate and Owner views expose only their permitted Company, ordinary-job, and existing team-management projections. Historical CV evidence remains protected by the existing retention worker.
+- No new HR Manager/Recruiter self-application or Team Applications route, API, navigation entry, or notification destination is exposed; legacy records and queued messages remain drainable for cleanup.
+- Company and existing team-management copy is read from the shared English/Vietnamese workspace locale boundary; company and job content remains user-authored.
 
 ## Project Structure
 
@@ -146,31 +146,22 @@ spec-kit/specs/028-candidate-company-job-applications/
 ```text
 web/
 ├── prisma/schema.prisma and migration
-├── src/app/company/page.tsx
-├── src/app/company/[companyId]/page.tsx
+├── src/app/(workspace)/company/page.tsx
+├── src/app/(workspace)/company/[companyId]/page.tsx
 ├── src/app/api/companies/route.ts
 ├── src/app/api/companies/[companyId]/route.ts
 ├── src/app/api/companies/[companyId]/jobs/route.ts
-├── src/app/api/candidate/team-applications/route.ts
-├── src/app/api/candidate/team-applications/[applicationId]/route.ts
-├── src/app/api/recruiter/company/team/applications/route.ts
-├── src/app/api/recruiter/company/team/applications/[applicationId]/route.ts
-├── src/app/api/recruiter/company/team/applications/[applicationId]/accept/route.ts
-├── src/app/api/recruiter/company/team/applications/[applicationId]/reject/route.ts
 ├── src/app/api/recruiter/company/team/invitations/accept/route.ts
 ├── src/backend/services/companies/company-discovery-service.ts
-├── src/backend/services/company-members/team-application-service.ts
-├── src/backend/services/company-members/team-application-authorization.ts
 ├── src/backend/repositories/companies/
 ├── src/backend/repositories/company-members/
 ├── src/frontend/features/candidate-company/
-├── src/frontend/features/recruiter-workspace/company-team-applications-screen.tsx
+├── src/frontend/features/recruiter-workspace/company-team-screen.tsx
 ├── src/shared/contracts/company/
-├── src/shared/contracts/company-members/team-applications.ts
-└── tests/{backend,frontend,security,system}/company-team-applications/
+└── tests/{backend,frontend,security,system}/company-discovery/
 ```
 
-**Structure Decision**: Extend the existing modular web application. Candidate company discovery and ordinary job navigation belong to the public/candidate job-board boundary. Team applications, Owner review, invitation decisions, CV access, and membership creation belong to the existing company-members/recruiter workspace boundary. Shared contracts keep transport validation separate from domain services and persistence.
+**Structure Decision**: Extend the existing modular web application. Candidate company discovery and ordinary job navigation belong to the public/candidate job-board boundary. Existing Owner invitations, team management, and membership creation remain in the company-members/recruiter workspace boundary. Historical TeamApplication persistence and retention are compatibility-only infrastructure; shared contracts keep transport validation separate from domain services and persistence.
 
 ## Implementation Phases
 
@@ -178,28 +169,23 @@ web/
 
 1. Confirm existing approved-company projection and public job visibility rules.
 2. Confirm job search normalization and company-scoped filtering behavior.
-3. Confirm existing CV validation, immutable document promotion, retention, and download authorization.
-4. Confirm CompanyInvitation acceptance and email outbox idempotency boundaries.
-5. Record decisions and rejected alternatives in `research.md`.
+3. Confirm existing company invitation acceptance, membership authorization, and email outbox idempotency boundaries.
+4. Record decisions and rejected alternatives in `research.md`.
 
 ### Phase 1 — Data and contracts
 
-1. Define TeamApplication fields, states, unique constraints, and relations to Candidate, Company, team opportunity/job context, CV evidence, invitation, and audit records.
-2. Add safe persistence changes and retention/deletion handling for team CV evidence.
-3. Define public company list/detail/job-search projections and Team Application candidate/Owner contracts.
-4. Define invitation acceptance and rejection-notification outcomes, including retry/idempotency behavior.
-5. Create quickstart validation scenarios.
-6. Update agent context to reference this plan.
+1. Keep historical TeamApplication persistence and retention/deletion handling compatible with existing records.
+2. Define public company list/detail/job-search projections and existing invitation/team-management contracts.
+3. Verify invitation acceptance and membership outcomes, including retry/idempotency behavior.
+4. Create quickstart validation scenarios.
+5. Update agent context to reference this plan.
 
 ### Phase 2 — Implementation sequencing for tasks generation
 
 1. Public company projections and responsive Candidate Company list/detail UI.
 2. Company-scoped keyword/location search and navigation to existing job detail pages.
-3. Team opportunity entry point and candidate CV submission/status flow.
-4. Team Application repository/service, authorization, audit, retention, and Owner review UI.
-5. Accept/reject decisions, optional rejection reason, email notifications, and invitation retry behavior.
-6. Invitation acceptance and membership creation using existing company membership rules.
-7. Security, accessibility, integration, system, and P95 verification.
+3. Existing company invitation acceptance and membership creation using company membership rules.
+4. Security, accessibility, integration, system, and P95 verification for the Company experience.
 
 ## Complexity Tracking
 

@@ -3,7 +3,7 @@ import { CompanyJobSearchService } from "@/backend/services/companies/company-jo
 import {
   approvedCompanyFixture,
   publicJobCardFixture,
-} from "../../../helpers/company-team-applications-fixture";
+} from "../../../helpers/company-discovery-fixture";
 
 const { companyFindFirst, membershipCount } = vi.hoisted(() => ({
   companyFindFirst: vi.fn(),
@@ -21,7 +21,10 @@ describe("Company-scoped job search integration", () => {
   beforeEach(() => {
     companyFindFirst.mockReset();
     membershipCount.mockReset();
-    companyFindFirst.mockResolvedValue(approvedCompanyFixture);
+    companyFindFirst.mockResolvedValue({
+      ...approvedCompanyFixture,
+      _count: { jobPostings: 1 },
+    });
     membershipCount.mockResolvedValue(2);
   });
 

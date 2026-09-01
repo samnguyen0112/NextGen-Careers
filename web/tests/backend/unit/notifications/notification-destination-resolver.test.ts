@@ -55,7 +55,7 @@ describe("notification destination resolver", () => {
       }),
     ).toBe("/notifications?notification=notification-1");
   });
-  it("opens team-application alerts in the Owner review screen", () => {
+  it("routes legacy team-application alerts to team management", () => {
     expect(
       resolveNotificationHref({
         ...base,
@@ -64,9 +64,7 @@ describe("notification destination resolver", () => {
         contextId: "company 1",
         recipientRole: "RECRUITER",
       }),
-    ).toBe(
-      "/recruiter/company-settings/team/applications?companyId=company%201",
-    );
+    ).toBe("/recruiter/company-settings/team");
   });
   it("returns a safe href for every notification kind, including legacy contextless rows", () => {
     for (const kind of notificationKinds) {

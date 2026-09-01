@@ -2,20 +2,13 @@ import { describe, expect, it, vi } from "vitest";
 import {
   CompanyDiscoveryService,
   companySizeRange,
-  openRoles,
 } from "@/backend/services/companies/company-discovery-service";
 import {
   approvedCompanyFixture,
   publicJobCardFixture,
-} from "../../../helpers/company-team-applications-fixture";
+} from "../../../helpers/company-discovery-fixture";
 
 describe("Company discovery service", () => {
-  it("does not expose team roles when a public company has no active Owner", () => {
-    expect(openRoles([], false)).toEqual([]);
-    expect(openRoles([{ role: "HR_MANAGER", state: "OPEN" }], false)).toEqual(
-      [],
-    );
-  });
   it.each([
     [0, "Unavailable"],
     [1, "1–10 employees"],
@@ -109,7 +102,7 @@ describe("Company discovery service", () => {
     expect(result.locations).toEqual(["Da Nang", "Ho Chi Minh City"]);
   });
 
-  it("scopes detail jobs to the selected company and exposes open team roles", async () => {
+  it("scopes detail jobs to the selected company", async () => {
     const repository = {
       list: vi.fn(),
       findById: vi.fn().mockResolvedValue({
@@ -126,16 +119,9 @@ describe("Company discovery service", () => {
         totalPages: 1,
       }),
     };
-    const opportunities = {
-      listForCompany: vi.fn().mockResolvedValue([
-        { role: "HR_MANAGER", state: "OPEN" },
-        { role: "RECRUITER", state: "CLOSED" },
-      ]),
-    };
     const service = new CompanyDiscoveryService(
       repository as never,
       jobs as never,
-      opportunities as never,
     );
     const result = await service.detail(
       approvedCompanyFixture.id,
@@ -143,7 +129,6 @@ describe("Company discovery service", () => {
       { q: "recruiter", location: "Ho Chi Minh City" },
     );
     expect(result.sizeRange).toBe("11–50 employees");
-    expect(result.teamRoles).toEqual(["HR_MANAGER"]);
     expect(result.jobs).toEqual([publicJobCardFixture]);
     expect(jobs.searchScoped).toHaveBeenCalledWith(
       { q: "recruiter", location: "Ho Chi Minh City" },
@@ -151,65 +136,5 @@ describe("Company discovery service", () => {
       expect.any(Date),
       { companyId: approvedCompanyFixture.id },
     );
-  });
-
-  it("keeps an unconfigured supported role open until an Owner closes it", async () => {
-    const repository = {
-      list: vi.fn(),
-      findById: vi.fn().mockResolvedValue(approvedCompanyFixture),
-    };
-    const jobs = {
-      searchScoped: vi.fn().mockResolvedValue({
-        items: [],
-        total: 0,
-        nextCursor: null,
-        page: 1,
-        totalPages: 0,
-      }),
-    };
-    const opportunities = {
-      listForCompany: vi
-        .fn()
-        .mockResolvedValue([{ role: "HR_MANAGER", state: "OPEN" }]),
-    };
-    const service = new CompanyDiscoveryService(
-      repository as never,
-      jobs as never,
-      opportunities as never,
-    );
-
-    const result = await service.detail(approvedCompanyFixture.id, {
-      kind: "visitor",
-    });
-
-    expect(result.teamRoles).toEqual(["HR_MANAGER", "RECRUITER"]);
-  });
-
-  it("keeps ordinary jobs discoverable while hiding team applications without an Owner", async () => {
-    const repository = {
-      list: vi.fn(),
-      findById: vi.fn().mockResolvedValue({
-        ...approvedCompanyFixture,
-        activeOwnerCount: 0,
-      }),
-    };
-    const jobs = {
-      searchScoped: vi.fn().mockResolvedValue({
-        items: [publicJobCardFixture],
-        total: 1,
-        nextCursor: null,
-        page: 1,
-        totalPages: 1,
-      }),
-    };
-    const opportunities = { listForCompany: vi.fn().mockResolvedValue([]) };
-    const result = await new CompanyDiscoveryService(
-      repository as never,
-      jobs as never,
-      opportunities as never,
-    ).detail(approvedCompanyFixture.id, { kind: "visitor" });
-
-    expect(result.teamRoles).toEqual([]);
-    expect(result.jobs).toEqual([publicJobCardFixture]);
   });
 });

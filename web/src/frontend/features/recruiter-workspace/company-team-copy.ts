@@ -5,7 +5,6 @@ type CompanyTeamCopy = {
   breadcrumb: string;
   title: string;
   description: string;
-  teamApplications: string;
   teamMembers: (count: number) => string;
   inviteTeammate: string;
   inviteRequirement: string;
@@ -58,7 +57,6 @@ const englishCopy: CompanyTeamCopy = {
   title: "Build your hiring team",
   description:
     "Invite trusted colleagues and manage their access to this company.",
-  teamApplications: "Team Applications",
   teamMembers: (count) => `${count} team members`,
   inviteTeammate: "Invite a teammate",
   inviteRequirement: "They must already have a SmartHire account to accept.",
@@ -140,7 +138,6 @@ const vietnameseCopy: CompanyTeamCopy = {
   title: "Xây dựng đội ngũ tuyển dụng",
   description:
     "Mời đồng nghiệp đáng tin cậy và quản lý quyền truy cập công ty.",
-  teamApplications: "Hồ sơ ứng tuyển đội ngũ",
   teamMembers: (count) => `${count} thành viên đội ngũ`,
   inviteTeammate: "Mời thành viên đội ngũ",
   inviteRequirement: "Người được mời cần có tài khoản SmartHire để chấp nhận.",

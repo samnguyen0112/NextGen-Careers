@@ -3,7 +3,7 @@ import { CompanyDiscoveryService } from "@/backend/services/companies/company-di
 import {
   approvedCompanyFixture,
   publicJobCardFixture,
-} from "../../../helpers/company-team-applications-fixture";
+} from "../../../helpers/company-discovery-fixture";
 
 describe("Company detail integration projection", () => {
   it("derives size from active employees and keeps missing public fields explicit", async () => {
@@ -27,14 +27,9 @@ describe("Company detail integration projection", () => {
         totalPages: 1,
       }),
     };
-    const opportunities = {
-      listForCompany: vi.fn().mockResolvedValue([]),
-    };
-
     const result = await new CompanyDiscoveryService(
       repository as never,
       jobs as never,
-      opportunities as never,
     ).detail(approvedCompanyFixture.id, { kind: "visitor" });
 
     expect(result.sizeRange).toBe("51–200 employees");

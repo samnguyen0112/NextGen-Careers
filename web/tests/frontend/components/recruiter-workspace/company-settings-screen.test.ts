@@ -169,7 +169,9 @@ describe("company posting gate validation", () => {
       screen.getByRole("heading", { name: "Dava", level: 1 }),
     ).toBeInTheDocument();
     expect(screen.getByText("1/3 slots")).toBeInTheDocument();
-    expect(screen.getByRole("group", { name: "Your companies" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("group", { name: "Your companies" }),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: "Add or join a company" }),
     ).toBeInTheDocument();
@@ -181,15 +183,14 @@ describe("company posting gate validation", () => {
       "true",
     );
     const manageTeamLink = screen.getByRole("link", { name: "Manage team" });
-    const teamApplicationsLink = screen.getByRole("link", {
-      name: "Team Applications",
-    });
     expect(manageTeamLink).toHaveAttribute(
       "href",
       "/recruiter/company-settings/team?companyId=company-1",
     );
     expect(manageTeamLink.parentElement).toHaveClass(styles.sideActions);
-    expect(teamApplicationsLink.parentElement).toBe(manageTeamLink.parentElement);
+    expect(
+      screen.queryByRole("link", { name: "Team Applications" }),
+    ).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /Northstar Labs/ }));
 
@@ -198,10 +199,9 @@ describe("company posting gate validation", () => {
         screen.getByRole("heading", { name: "Northstar Labs", level: 1 }),
       ).toBeInTheDocument();
     });
-    expect(screen.getByRole("button", { name: /Northstar Labs/ })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
+    expect(
+      screen.getByRole("button", { name: /Northstar Labs/ }),
+    ).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByText("Verification: Approved")).toBeInTheDocument();
     expect(
       screen.queryByRole("link", { name: "Manage team" }),

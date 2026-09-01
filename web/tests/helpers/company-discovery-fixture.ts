@@ -1,0 +1,56 @@
+export const approvedCompanyFixture = Object.freeze({
+  id: "company-discovery-028",
+  slug: "northstar-labs",
+  displayName: "Northstar Labs",
+  logoUrl: null,
+  publicDescription: "A verified product company.",
+  publicLocation: "Ho Chi Minh City",
+  foundedYear: 2018,
+  industry: "Technology",
+  activeEmployeeCount: 2,
+  verificationState: "ACTIVE" as const,
+  moderationState: "ACTIVE" as const,
+});
+
+export const activePublicJobFixture = Object.freeze({
+  id: "job-discovery-028",
+  companyId: approvedCompanyFixture.id,
+  slug: "senior-recruiter",
+  title: "Senior Recruiter",
+  location: "Ho Chi Minh City",
+  status: "ACTIVE" as const,
+});
+
+export const publicJobCardFixture = Object.freeze({
+  id: activePublicJobFixture.id,
+  slug: activePublicJobFixture.slug,
+  title: activePublicJobFixture.title,
+  company: {
+    slug: approvedCompanyFixture.slug,
+    displayName: approvedCompanyFixture.displayName,
+    logoUrl: null,
+    websiteUrl: null,
+    publicDescription: approvedCompanyFixture.publicDescription,
+    publicLocation: approvedCompanyFixture.publicLocation,
+    size: "1-10 employees",
+    industry: approvedCompanyFixture.industry,
+    address: approvedCompanyFixture.publicLocation,
+  },
+  location: activePublicJobFixture.location,
+  employmentType: "FULL_TIME" as const,
+  experienceLevel: "MID" as const,
+  workArrangement: "HYBRID" as const,
+  salary: null,
+  summary: "Build a thoughtful recruiting experience.",
+  skills: ["Recruiting"],
+  publishedAt: "2026-08-27T00:00:00.000Z",
+  applicationDeadline: null,
+  actions: {
+    authenticated: true,
+    saved: false,
+    applied: false,
+    canSave: true,
+    canReport: true,
+    canApply: true,
+  },
+});

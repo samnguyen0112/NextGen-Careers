@@ -1,11 +1,6 @@
 import "server-only";
 
 import { PrismaCompanyDiscoveryRepository } from "@/backend/repositories/companies/prisma-company-discovery-repository";
-import {
-  PrismaTeamOpportunityRepository,
-  type TeamOpportunityRow,
-  type TeamOpportunityRepositoryPort,
-} from "@/backend/repositories/company-members/prisma-team-opportunity-repository";
 import { JobDiscoveryService } from "@/backend/services/jobs/job-discovery-service";
 import type { JobActor } from "@/backend/services/jobs/job-types";
 import {
@@ -15,10 +10,6 @@ import {
   type CompanyDetail,
   type CompanyListResponse,
 } from "@/shared/contracts/company";
-import {
-  teamRoleSchema,
-  type TeamRole,
-} from "@/shared/contracts/company-members/team-applications";
 import {
   companyLocationRegion,
   companyLocationRegions,
@@ -54,29 +45,10 @@ function pageLimit(value: number | undefined) {
     : DEFAULT_PAGE_SIZE;
 }
 
-export function openRoles(
-  opportunities: readonly Pick<TeamOpportunityRow, "role" | "state">[],
-  hasActiveOwner = true,
-): TeamRole[] {
-  if (!hasActiveOwner) return [];
-  // Opportunities are created lazily on the first application. Until then,
-  // both supported pathways are open for every approved company with an Owner.
-  if (!opportunities.length) return ["HR_MANAGER", "RECRUITER"];
-  const stateByRole = new Map<TeamRole, TeamOpportunityRow["state"]>();
-  for (const opportunity of opportunities) {
-    const role = teamRoleSchema.safeParse(opportunity.role);
-    if (role.success) stateByRole.set(role.data, opportunity.state);
-  }
-  return (["HR_MANAGER", "RECRUITER"] as const).filter(
-    (role) => stateByRole.get(role) !== "CLOSED",
-  );
-}
-
 export class CompanyDiscoveryService {
   constructor(
     private readonly repository = new PrismaCompanyDiscoveryRepository(),
     private readonly jobs = new JobDiscoveryService(),
-    private readonly opportunities: TeamOpportunityRepositoryPort = new PrismaTeamOpportunityRepository(),
   ) {}
 
   async list(
@@ -139,11 +111,9 @@ export class CompanyDiscoveryService {
     if (!company) {
       throw new CompanyDiscoveryAuthorizationError("COMPANY_UNAVAILABLE");
     }
-    const [jobs, opportunities] = await Promise.all([
-      this.jobs.searchScoped(rawJobSearch, actor, now, { companyId }),
-      this.opportunities.listForCompany(company.id),
-    ]);
-    const roles = openRoles(opportunities, company.activeOwnerCount > 0);
+    const jobs = await this.jobs.searchScoped(rawJobSearch, actor, now, {
+      companyId,
+    });
     return companyDetailSchema.parse({
       companyId: company.id,
       slug: company.slug,
@@ -158,7 +128,6 @@ export class CompanyDiscoveryService {
       ...(company.openPositionCount === undefined
         ? {}
         : { openPositionCount: company.openPositionCount }),
-      teamRoles: roles,
       jobs: jobs.items,
       jobTotal: jobs.total,
       jobPage: jobs.page,

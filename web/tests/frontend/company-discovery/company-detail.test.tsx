@@ -4,8 +4,7 @@ import { CompanyDetailScreen } from "@/frontend/features/candidate-company/compa
 import {
   approvedCompanyFixture,
   publicJobCardFixture,
-  teamRoleFixtures,
-} from "../../helpers/company-team-applications-fixture";
+} from "../../helpers/company-discovery-fixture";
 
 vi.mock("@/frontend/features/dashboard/client/workspace-locale", () => ({
   useWorkspaceLocale: () => "en",
@@ -22,7 +21,6 @@ const company = {
   industry: approvedCompanyFixture.industry,
   location: approvedCompanyFixture.publicLocation,
   activeEmployeeCount: 2,
-  teamRoles: [...teamRoleFixtures],
   jobs: [publicJobCardFixture],
   jobTotal: 1,
   jobPage: 1,
@@ -30,7 +28,7 @@ const company = {
 };
 
 describe("Candidate Company detail", () => {
-  it("shows public metadata, separate team actions, and ordinary job navigation", () => {
+  it("shows public metadata and ordinary job navigation", () => {
     render(<CompanyDetailScreen initialCompany={company} />);
 
     expect(
@@ -38,12 +36,10 @@ describe("Candidate Company detail", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("2018")).toBeInTheDocument();
     expect(screen.getByText("1–10 employees")).toBeInTheDocument();
+    expect(screen.queryByText("Join the company team")).not.toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "Apply as HR Manager" }),
-    ).toHaveAttribute(
-      "href",
-      "/company/company-team-028/apply?role=HR_MANAGER",
-    );
+      screen.queryByRole("link", { name: "Apply as HR Manager" }),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: publicJobCardFixture.title }),
     ).toHaveAttribute("href", "/jobs/senior-recruiter");
@@ -76,7 +72,7 @@ describe("Candidate Company detail", () => {
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
     expect(fetchMock).toHaveBeenLastCalledWith(
-      "/api/companies/company-team-028/jobs?q=recruiter&location=Ho+Chi+Minh+City",
+      "/api/companies/company-discovery-028/jobs?q=recruiter&location=Ho+Chi+Minh+City",
       { headers: { Accept: "application/json" } },
     );
     expect(
@@ -86,7 +82,7 @@ describe("Candidate Company detail", () => {
     fireEvent.click(screen.getByRole("button", { name: "Clear" }));
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
     expect(fetchMock).toHaveBeenLastCalledWith(
-      "/api/companies/company-team-028/jobs",
+      "/api/companies/company-discovery-028/jobs",
       { headers: { Accept: "application/json" } },
     );
   });
@@ -135,7 +131,7 @@ describe("Candidate Company detail", () => {
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
     expect(fetchMock).toHaveBeenLastCalledWith(
-      "/api/companies/company-team-028/jobs?q=recruiter&location=Ho+Chi+Minh+City&page=2",
+      "/api/companies/company-discovery-028/jobs?q=recruiter&location=Ho+Chi+Minh+City&page=2",
       { headers: { Accept: "application/json" } },
     );
     expect(
@@ -176,7 +172,7 @@ describe("Candidate Company detail", () => {
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
     expect(fetchMock).toHaveBeenLastCalledWith(
-      "/api/companies/company-team-028/jobs?q=recruiter&location=Ho+Chi+Minh+City&limit=50",
+      "/api/companies/company-discovery-028/jobs?q=recruiter&location=Ho+Chi+Minh+City&limit=50",
       { headers: { Accept: "application/json" } },
     );
   });

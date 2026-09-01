@@ -60,7 +60,6 @@ export interface CompanyDiscoveryRepository {
     foundedYear: number | null;
     industry: string | null;
     activeEmployeeCount: number;
-    activeOwnerCount: number;
     openPositionCount: number;
   } | null>;
 }
@@ -163,28 +162,17 @@ export class PrismaCompanyDiscoveryRepository implements CompanyDiscoveryReposit
       },
     });
     if (!company) return null;
-    const [activeEmployeeCount, activeOwnerCount] = await Promise.all([
-      prisma.companyMembership.count({
-        where: {
-          companyId: company.id,
-          status: "ACTIVE",
-          removedAt: null,
-        },
-      }),
-      prisma.companyMembership.count({
-        where: {
-          companyId: company.id,
-          role: "OWNER",
-          status: "ACTIVE",
-          removedAt: null,
-        },
-      }),
-    ]);
+    const activeEmployeeCount = await prisma.companyMembership.count({
+      where: {
+        companyId: company.id,
+        status: "ACTIVE",
+        removedAt: null,
+      },
+    });
     const { _count, ...publicFields } = company;
     return {
       ...publicFields,
       activeEmployeeCount,
-      activeOwnerCount,
       openPositionCount: _count.jobPostings,
     };
   }

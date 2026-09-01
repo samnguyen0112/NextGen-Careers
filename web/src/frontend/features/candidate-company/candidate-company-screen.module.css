@@ -263,8 +263,7 @@
   gap: var(--sh-space-2);
 }
 
-.button,
-.teamLink {
+.button {
   display: inline-flex;
   min-height: var(--sh-control-height);
   align-items: center;
@@ -289,8 +288,7 @@
     transform var(--sh-motion-fast) ease;
 }
 
-.button:hover:not(:disabled),
-.teamLink:hover {
+.button:hover:not(:disabled) {
   border-color: var(--sh-color-brand-primary-hover);
   background: var(--sh-color-brand-primary-hover);
   transform: translateY(-1px);
@@ -309,8 +307,7 @@
   background: var(--sh-color-surface-card);
 }
 
-.secondary:hover:not(:disabled),
-.teamLink.secondary:hover {
+.secondary:hover:not(:disabled) {
   border-color: var(--sh-color-brand-primary);
   color: var(--sh-color-brand-primary);
   background: var(--sh-color-brand-soft);
@@ -663,13 +660,6 @@
   font-size: var(--sh-font-size-body-sm);
 }
 
-.teamLinks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sh-space-2);
-  margin-top: var(--sh-space-4);
-}
-
 .searchButton {
   min-width: 0;
   white-space: nowrap;
@@ -858,7 +848,6 @@
 
 .card:focus-visible,
 .button:focus-visible,
-.teamLink:focus-visible,
 .jobLink:focus-visible,
 .backLink:focus-visible,
 .popularChip:focus-visible {
@@ -941,7 +930,6 @@
 @media (prefers-reduced-motion: reduce) {
   .card,
   .button,
-  .teamLink,
   .popularChip,
   .arrow,
   .input,

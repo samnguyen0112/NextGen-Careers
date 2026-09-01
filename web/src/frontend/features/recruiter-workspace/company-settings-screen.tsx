@@ -1043,12 +1043,6 @@ export function CompanySettingsScreen({
               >
                 {teamCopy.manageTeam}
               </Link>
-              <Link
-                className={styles.btnOutline}
-                href={`/recruiter/company-settings/team/applications?companyId=${encodeURIComponent(company.databaseId ?? company.id)}`}
-              >
-                {teamCopy.teamApplications}
-              </Link>
             </div>
           ) : (
             <p className={styles.sideNote}>{copy.activeOwnerOnly}</p>

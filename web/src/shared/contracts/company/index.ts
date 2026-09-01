@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { jobCardSchema } from "@/shared/contracts/jobs/discovery";
-import { teamRoleSchema } from "@/shared/contracts/company-members/team-applications";
 
 export const companyCardSchema = z
   .object({
@@ -59,7 +58,6 @@ export const companyDetailSchema = companyCardSchema
     location: z.string().max(300).nullable(),
     activeEmployeeCount: z.number().int().nonnegative(),
     openPositionCount: z.number().int().nonnegative().optional(),
-    teamRoles: z.array(teamRoleSchema).max(2),
     jobs: z.array(jobCardSchema).max(50),
     jobTotal: z.number().int().nonnegative().default(0),
     jobPage: z.number().int().positive().default(1),

@@ -82,6 +82,19 @@ describe("candidate applications list filters", () => {
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
   });
 
+  it("keeps the applications page focused on ordinary job applications", () => {
+    render(
+      <CandidateApplicationsListPage
+        initialApplications={[]}
+        initialNextCursor={null}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("link", { name: "Team Applications" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("shows counts, separates terminal filters, and includes Offer sent in Outcome", () => {
     render(
       <CandidateApplicationsListPage

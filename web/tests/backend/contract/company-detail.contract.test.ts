@@ -3,11 +3,10 @@ import { companyDetailSchema } from "@/shared/contracts/company";
 import {
   approvedCompanyFixture,
   publicJobCardFixture,
-  teamRoleFixtures,
-} from "../../helpers/company-team-applications-fixture";
+} from "../../helpers/company-discovery-fixture";
 
 describe("Company detail contract", () => {
-  it("accepts public metadata, team entry points, and ordinary jobs", () => {
+  it("accepts public metadata and ordinary jobs", () => {
     const detail = companyDetailSchema.parse({
       companyId: approvedCompanyFixture.id,
       slug: approvedCompanyFixture.slug,
@@ -19,13 +18,12 @@ describe("Company detail contract", () => {
       industry: approvedCompanyFixture.industry,
       location: approvedCompanyFixture.publicLocation,
       activeEmployeeCount: 2,
-      teamRoles: teamRoleFixtures,
       jobs: [publicJobCardFixture],
       jobTotal: 1,
       jobPage: 1,
       jobTotalPages: 1,
     });
-    expect(detail.teamRoles).toEqual(teamRoleFixtures);
+    expect(detail).not.toHaveProperty("teamRoles");
     expect(detail.jobs[0]?.id).toBe(publicJobCardFixture.id);
     expect(detail.jobTotalPages).toBe(1);
   });

@@ -3,7 +3,7 @@ import { CompanyJobSearchService } from "@/backend/services/companies/company-jo
 import {
   approvedCompanyFixture,
   publicJobCardFixture,
-} from "../../helpers/company-team-applications-fixture";
+} from "../../helpers/company-discovery-fixture";
 
 const { companyFindFirst, membershipCount } = vi.hoisted(() => ({
   companyFindFirst: vi.fn(),
@@ -19,7 +19,10 @@ vi.mock("@/backend/database/prisma", () => ({
 
 describe("Company job search performance", () => {
   beforeEach(() => {
-    companyFindFirst.mockResolvedValue(approvedCompanyFixture);
+    companyFindFirst.mockResolvedValue({
+      ...approvedCompanyFixture,
+      _count: { jobPostings: 1 },
+    });
     membershipCount.mockResolvedValue(2);
   });
 

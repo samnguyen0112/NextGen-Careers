@@ -1,10 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { CompanyDetailScreen } from "@/frontend/features/candidate-company/company-detail-screen";
-import {
-  approvedCompanyFixture,
-  teamRoleFixtures,
-} from "../../helpers/company-team-applications-fixture";
+import { approvedCompanyFixture } from "../../helpers/company-discovery-fixture";
 
 vi.mock("@/frontend/features/dashboard/client/workspace-locale", () => ({
   useWorkspaceLocale: () => "en",
@@ -25,7 +22,6 @@ describe("Company job search controls", () => {
           industry: approvedCompanyFixture.industry,
           location: approvedCompanyFixture.publicLocation,
           activeEmployeeCount: 2,
-          teamRoles: [...teamRoleFixtures],
           jobs: [],
           jobTotal: 0,
           jobPage: 1,

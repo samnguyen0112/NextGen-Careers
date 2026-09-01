@@ -6,6 +6,8 @@
 
 **Organization**: Tasks are grouped by user story so each story can be implemented and tested as an independently verifiable increment.
 
+> **Current delivery scope (2026-09-01):** Only the Company discovery/detail/job-search slice is active. The original Team Application stories are retained below as historical design tasks; their candidate and Owner entry points, APIs, services, and screens have been removed. Existing team-member invitations and historical record retention remain for compatibility.
+
 ## Phase 1: Setup (Shared Infrastructure)
 
 **Purpose**: Prepare feature boundaries and shared test fixtures without changing ordinary job application behavior.

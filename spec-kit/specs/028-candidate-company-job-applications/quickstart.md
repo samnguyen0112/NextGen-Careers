@@ -1,10 +1,11 @@
-# Quickstart: Candidate Company and Team Applications
+# Quickstart: Candidate Company
+
+> **Current validation scope (2026-09-01):** Validate only the Company directory, Company detail, and ordinary company-job search scenarios in sections 1–2. Sections 3–5 describe the historical Team Applications design and are not part of the current delivery. Existing historical records remain subject to retention cleanup.
 
 ## Prerequisites
 
-- Use a local development database with approved companies, active memberships, at least one active public ordinary job, and an open HR Manager or Recruiter team opportunity.
-- Prepare two Candidate accounts and one verified Company Owner account.
-- Prepare valid PDF and DOCX CV fixtures at or below 5,000,000 bytes, plus an invalid type and an oversized file.
+- Use a local development database with approved companies, active memberships, and at least one active public ordinary job.
+- Prepare a Candidate account and a verified Company Owner account for checking the existing company workspace.
 - Use the project’s normal development and test commands from `web/package.json`.
 
 ## Validation scenarios
@@ -17,10 +18,10 @@
 4. Enter a company name, industry, or location keyword and confirm only matching cards remain.
 5. Move to another company page and confirm the keyword remains in the URL and result set.
 6. Open a company detail page.
-7. Confirm founding year, employee-derived size, industry, location, team-application entry point, and active public jobs are shown.
+7. Confirm founding year, employee-derived size, industry, location, and active public jobs are shown.
 8. When the company has more than one job page, change pages and confirm the job filters and Find Jobs card/status treatment remain consistent.
 9. Confirm missing company fields show an unavailable state rather than fabricated values.
-10. Open a public company without an active Owner and confirm ordinary jobs remain visible while HR Manager/Recruiter team-application actions are unavailable.
+10. Open a public company without an active Owner and confirm its ordinary public jobs remain visible.
 
 ### 2. Search ordinary company jobs
 
@@ -28,7 +29,7 @@
 2. Select a location.
 3. Confirm results satisfy both filters and belong only to the selected company.
 4. Clear filters and confirm all active public jobs return.
-5. Select an ordinary job and confirm navigation reaches the existing job detail page, not Team Applications.
+5. Select an ordinary job and confirm navigation reaches the existing job detail and application flow.
 
 ### 3. Submit a team application
 

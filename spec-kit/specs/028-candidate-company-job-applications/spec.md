@@ -5,6 +5,8 @@
 **Status**: Draft
 **Input**: Candidate users need a Company area where they can browse companies, view company details and available jobs, search jobs by keyword and location, and submit a CV to apply for HR Manager or Recruiter opportunities. Owners need a lightweight Team Applications area to review submitted CVs and decide whether to send a company invitation.
 
+> **Current delivery scope (2026-09-01):** The implementation is Company-only. The HR Manager/Recruiter self-application flow and Team Applications review/status surfaces described below are historical design context and are not exposed by the current product. Existing ordinary company invitations and historical TeamApplication data are retained for compatibility and retention cleanup.
+
 ## Clarifications
 
 ### Session 2026-08-27

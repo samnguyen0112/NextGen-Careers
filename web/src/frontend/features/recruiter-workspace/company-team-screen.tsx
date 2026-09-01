@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useCsrfProof } from "@/frontend/features/authentication/client/csrf-proof-context";
@@ -148,12 +147,6 @@ export function CompanyTeamScreen({
           <p>{copy.description}</p>
         </div>
         <div className={styles.headerActions}>
-          <Link
-            className={styles.secondaryButton}
-            href={`/recruiter/company-settings/team/applications${companyId ? `?companyId=${encodeURIComponent(companyId)}` : ""}`}
-          >
-            {copy.teamApplications}
-          </Link>
           <div className={styles.memberCount}>
             <strong>{members.length}</strong>
             <span>{copy.teamMembers(members.length)}</span>

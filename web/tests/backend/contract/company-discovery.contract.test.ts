@@ -4,7 +4,7 @@ import {
   companyListQuerySchema,
   companyListResponseSchema,
 } from "@/shared/contracts/company";
-import { approvedCompanyFixture } from "../../helpers/company-team-applications-fixture";
+import { approvedCompanyFixture } from "../../helpers/company-discovery-fixture";
 
 describe("Company discovery contract", () => {
   it("projects only safe public company card fields", () => {

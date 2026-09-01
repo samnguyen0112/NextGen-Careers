@@ -171,35 +171,6 @@ export function CompanyDetailScreen({
 
       <section
         className={styles.panel}
-        aria-labelledby="team-opportunities-title"
-      >
-        <div className={styles.panelHeader}>
-          <div>
-            <h2 id="team-opportunities-title">{copy.joinTeam}</h2>
-            <p>{copy.teamDescription}</p>
-          </div>
-        </div>
-        {company.teamRoles.length ? (
-          <div className={styles.teamLinks}>
-            {company.teamRoles.map((role) => (
-              <Link
-                key={role}
-                className={styles.teamLink}
-                href={`/company/${encodeURIComponent(company.companyId)}/apply?role=${role}`}
-              >
-                {copy.applyAs(copy.roleLabel(role))}
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <p className={styles.empty} role="status">
-            {copy.teamApplicationUnavailable}
-          </p>
-        )}
-      </section>
-
-      <section
-        className={styles.panel}
         aria-labelledby="company-jobs-title"
         aria-busy={loading}
       >

@@ -63,7 +63,7 @@ export function TeamApplicationRejectedTemplate({
               textDecoration: "none",
             }}
           >
-            View Team Applications
+            View your applications
           </Button>
         </Container>
       </Body>
@@ -78,5 +78,5 @@ export function teamApplicationRejectedEmailText({
   applicationUrl,
 }: TeamApplicationRejectedTemplateProps) {
   const suffix = reason ? ` Owner message: ${reason}` : "";
-  return `Your application to join ${companyName} as ${roleLabel(role)} was not selected.${suffix} View Team Applications: ${applicationUrl}`;
+  return `Your application to join ${companyName} as ${roleLabel(role)} was not selected.${suffix} View your applications: ${applicationUrl}`;
 }

@@ -965,18 +965,6 @@
   gap: 12px;
 }
 
-.candidate-application-list-page__team-link {
-  color: var(--sh-color-brand-primary);
-  font-size: 12px;
-  font-weight: var(--sh-font-weight-bold);
-  text-decoration: none;
-}
-
-.candidate-application-list-page__team-link:hover,
-.candidate-application-list-page__team-link:focus-visible {
-  text-decoration: underline;
-}
-
 .candidate-application-filter {
   display: grid;
   width: min(100%, 340px);

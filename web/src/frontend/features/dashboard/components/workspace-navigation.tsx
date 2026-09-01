@@ -37,7 +37,6 @@ export function WorkspaceNavigation({
           suggestedJobs: "Việc làm đề xuất",
           cvMatchCheck: "Kiểm tra độ phù hợp CV",
           recommendationSettings: "Cài đặt gợi ý việc làm",
-          teamApplications: "Ứng tuyển đội ngũ",
         }
       : {
           company: "Company",
@@ -58,7 +57,6 @@ export function WorkspaceNavigation({
           suggestedJobs: "Suggested Jobs",
           cvMatchCheck: "CV Match Check",
           recommendationSettings: "Job Recommendation Settings",
-          teamApplications: "Team Applications",
         };
   const destinations = [
     { href: "/dashboard", label: copy.dashboard, icon: "dashboard" },
@@ -79,7 +77,6 @@ export function WorkspaceNavigation({
   ] as const;
   const applicationsSubnav = [
     { href: "/jobs/applied", label: copy.applications },
-    { href: "/jobs/applied/team", label: copy.teamApplications },
   ] as const;
   const sidebarWidthSamples = [
     ...destinations.map((destination) => ({

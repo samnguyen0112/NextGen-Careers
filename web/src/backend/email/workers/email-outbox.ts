@@ -307,7 +307,7 @@ export async function deliverClaimedOutbox(
         role: rejectionPayload.role,
         ...(rejectionPayload.reason ? { reason: rejectionPayload.reason } : {}),
         applicationUrl: new URL(
-          "/jobs/applied/team",
+          "/jobs/applied",
           serverEnvironment.NEXT_PUBLIC_APP_URL,
         ).toString(),
       };

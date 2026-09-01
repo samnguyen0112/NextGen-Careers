@@ -7,9 +7,9 @@ describe("Candidate Company locale copy", () => {
 
     expect(copy.searchCompanies).toBe("Search companies");
     expect(copy.paginationPage).toBe("Page");
-    expect(copy.teamApplicationUnavailable).toBe(
-      "Team applications are not currently available for this company.",
-    );
+    expect(copy.companyInformation).toBe("Company information");
+    expect(copy).not.toHaveProperty("teamApplications");
+    expect(copy).not.toHaveProperty("applyAs");
   });
 
   it("keeps the Company surface fully localized in Vietnamese", () => {
@@ -20,11 +20,8 @@ describe("Candidate Company locale copy", () => {
       "Tên công ty, ngành hoặc địa điểm",
     );
     expect(copy.paginationPage).toBe("Trang");
-    expect(copy.applyAs("Quản lý nhân sự")).toBe(
-      "Ứng tuyển vị trí Quản lý nhân sự",
-    );
-    expect(copy.teamApplicationUnavailable).toBe(
-      "Hiện chưa thể ứng tuyển vào đội ngũ của công ty này.",
-    );
+    expect(copy.companyInformation).toBe("Thông tin công ty");
+    expect(copy).not.toHaveProperty("teamApplications");
+    expect(copy).not.toHaveProperty("applyAs");
   });
 });
